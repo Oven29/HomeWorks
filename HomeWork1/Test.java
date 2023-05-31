@@ -6,7 +6,7 @@ class Test {
         // Sword<Plastic> placticSword = new Sword<>();
 
         Sword<Steel> Sword = new Sword<>();
-        if (Sword.proverka(new Steel())) {
+        if (Sword.strengthCheck(new Steel())) {
             System.out.println("Меч из steel прошёл проверку прочности");
         } else {
             System.out.println("Меч из steel не прошёл проверку прочности");
