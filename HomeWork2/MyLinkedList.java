@@ -1,78 +1,130 @@
 package HomeWork2;
 
-public class MyLinkedList<Type> {
-    private Object[] array = new Object[10];
-    public int lenght = 0;
+public class MyLinkedList<E> {
+    private class Node {
+        public Node next;
+        public E element;
 
-    private void resize(int newSize) {
-        // Переопределяем размер массива array
-        Object[] newArray = new Object[newSize];
-        System.arraycopy(array, 0, newArray, 0, lenght);
-        array = newArray;
-    }
-
-    public void add(Type element) {
-        // Добавляем элемет в конец
-        if (lenght == array.length - 1) {
-            resize(lenght * 2);
+        public Node(E element) {
+            this.element = element;
+            next = null;
         }
-        array[lenght++] = element;
+
+        public Node(E element, Node next) {
+            this.element = element;
+            this.next = next;
+        }
+
+        public String toString() {
+            return this.element.toString() + ", ";
+        }
     }
 
-    public void add(Type element, int index) {
-        // Добавляем элемент на определённую позицию или в конец
-        if (index > lenght || index < 0) {
-            add(element);
+    private int lenght;
+    private Node head;
+
+    public MyLinkedList() {
+        lenght = 0;
+        head = null;
+    }
+
+    private Node getNode(int index) {
+        if (index < 0 || index > lenght) {
+            throw new IndexOutOfBoundsException();
         } else {
-            if (lenght == array.length - 1) {
-                resize(lenght * 2);
+            Node node = head;
+            for (int i = 0; i < index; i++) {
+                node = node.next;
             }
-            Type mem, old = (Type) array[index];
-            lenght++;
-            for (int i = index + 1; i < lenght; i++) {
-                mem = (Type) array[i];
-                array[i] = old;
-                old = mem;
-            }
-            array[index] = element;
+            return node;
         }
     }
 
-    public Type remove(int index) {
-        // Удаляет элемент из массива, возвращает его значение
-        Type element = (Type) array[index];
-        for (int i = index; i < lenght; i++) {
-            array[i] = array[i + 1];
+    public int lenght() {
+        return lenght;
+    }
+
+    public E get(int index) {
+        return getNode(index).element;
+    }
+
+    public int indexof(Object obj) {
+        Node node = head;
+        for (int i = 0; i < lenght; i++) {
+            if (obj.equals(node.element)) {
+                return i;
+            } else {
+                node = node.next;
+            }
         }
-        array[lenght] = null;
+        return -1;
+    }
+
+    public void add(E element) {
+        if (lenght == 0) {
+            head = new Node(element);
+        } else {
+            Node node = head;
+            while (node.next != null) {
+                node = node.next;
+            }
+            node.next = new Node(element);
+        }
+        lenght++;
+    }
+
+    public void add(E element, int index) {
+        if (index < 0 || index > lenght) {
+            throw new IndexOutOfBoundsException();
+        } else if (index == 0) {
+            head = new Node(element, head);
+        } else {
+            Node node = getNode(index - 1);
+            node.next = new Node(element, node.next);
+        }
+        lenght++;
+    }
+
+    public E remove(int index) {
+        Node node;
+        if (index < 0 || index >= lenght) {
+            throw new IndexOutOfBoundsException();
+        } else if (index == 0) {
+            node = head;
+            head = head.next;
+        } else if (index == lenght - 1) {
+            node = getNode(lenght - 1);
+            node.next = null;
+        } else {
+            Node curNode = getNode(index - 1);
+            node = curNode.next;
+            curNode.next = curNode.next.next;
+        }
         lenght--;
-        return element;
+        return node.element;
     }
 
-    public Type get(int index) {
-        // Возвращает элемент массива по его индексу
-        return (Type) array[index];
+    public boolean removeByElement(Object obj) {
+        int index = indexof(obj);
+        if (index != -1) {
+            remove(index);
+            return true;
+        }
+        return false;
     }
 
     public String toString() {
-        String string = "[";
-        if (array[0].getClass() == String.class) {
-            for (int i = 0; i < lenght - 1; i++) {
-                string += "'" + array[i] + "'" + ", ";
-            }
-            if (lenght > 0) {
-                string += "'" + array[lenght - 1] + "'";
-            }
+        if (lenght == 0) {
+            return "[]";
         } else {
+            String string = "[";
+            Node node = head;
             for (int i = 0; i < lenght - 1; i++) {
-                string += array[i] + ", ";
+                string += node.toString();
+                node = node.next;
             }
-            if (lenght > 0) {
-                string += array[lenght - 1];
-            }
+            string += node.element.toString() + "]";
+            return string;
         }
-        string += "]";
-        return string;
     }
-
 }
